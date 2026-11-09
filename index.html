@@ -1,0 +1,1079 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#000000">
+  <meta name="description" content="Aeolus AI uses machine learning to plan offshore wind sites, turbine layouts, and energy forecasts in support of a cleaner global energy future.">
+  <title>Aeolus AI | A cleaner future starts offshore</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #000000;
+      --paper: #ffffff;
+      --soft: #efefef;
+      --pale: #dbe7eb;
+      --muted: #767676;
+      --body: #353535;
+      --brand: #455eae;
+      --night: #0b1322;
+      --hairline: rgba(0, 0, 0, .14);
+      --font: Arial, "Maison Neue", sans-serif;
+      --space: 8px;
+      --radius: 5px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--paper);
+      font: 16px/1.5 var(--font);
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: inherit; }
+    button, input { font: inherit; }
+    button, a { -webkit-tap-highlight-color: transparent; }
+    img { display: block; width: 100%; }
+    .wrap { width: min(100% - 64px, 1600px); margin-inline: auto; }
+    .button {
+      display: inline-flex;
+      min-height: 48px;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      padding: 0 20px;
+      border: 1px solid currentColor;
+      border-radius: var(--radius);
+      color: inherit;
+      background: transparent;
+      font-size: 14px;
+      text-decoration: none;
+      transition: color .2s ease, background .2s ease, border-color .2s ease;
+    }
+    .button:hover { color: var(--ink); background: var(--paper); border-color: var(--paper); }
+    .button-dark { color: var(--paper); background: var(--ink); border-color: var(--ink); }
+    .button-dark:hover { color: var(--ink); background: transparent; border-color: var(--ink); }
+    .arrow { font-size: 18px; line-height: 1; }
+
+    .site-header {
+      position: absolute;
+      z-index: 5;
+      inset: 0 0 auto;
+      color: var(--paper);
+    }
+    .header-inner {
+      min-height: 88px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      border-bottom: 1px solid rgba(255,255,255,.22);
+    }
+    .wordmark {
+      display: inline-flex;
+      align-items: center;
+      gap: 11px;
+      color: inherit;
+      font-size: 17px;
+      font-weight: 700;
+      letter-spacing: -.04em;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+    .wordmark-mark { width: 29px; height: 29px; }
+    .wordmark-mark path { fill: none; stroke: currentColor; stroke-width: 1.65; stroke-linecap: round; }
+    .header-nav { display: flex; align-items: center; gap: clamp(20px, 3vw, 48px); }
+    .header-nav a {
+      color: inherit;
+      font-size: 13px;
+      text-decoration: none;
+      transition: opacity .2s ease;
+    }
+    .header-nav a:hover { opacity: .7; }
+    .header-nav .nav-cta { padding-bottom: 4px; border-bottom: 1px solid currentColor; }
+
+    .hero {
+      position: relative;
+      min-height: min(900px, 100svh);
+      min-height: max(680px, 100svh);
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+      color: var(--paper);
+      background: var(--night);
+    }
+    .hero::after { position: absolute; inset: 0; content: ""; }
+    .hero-video {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center 54%;
+    }
+    .hero::after {
+      background: linear-gradient(90deg, rgba(0,0,0,.58), rgba(0,0,0,.08) 80%),
+        linear-gradient(0deg, rgba(0,0,0,.55), transparent 62%);
+    }
+    .hero::before { position: absolute; inset: 0; background: var(--night); content: ""; }
+    .hero-copy { position: relative; z-index: 1; width: min(1100px, calc(100% - 64px)); padding: 0; text-align: center; }
+    .hero h1 {
+      max-width: 1000px;
+      margin: 0 auto;
+      font-size: clamp(54px, 8.3vw, 100px);
+      font-weight: 300;
+      letter-spacing: -.065em;
+      line-height: .96;
+      text-align: center;
+    }
+    .intro {
+      position: relative;
+      width: 100%;
+      min-height: clamp(500px, 54vw, 720px);
+      margin: 0;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 9vw;
+      align-items: center;
+      padding: clamp(90px, 12vw, 170px) clamp(32px, 7vw, 110px);
+      color: var(--paper);
+      background-color: var(--night);
+      background-image:
+        linear-gradient(90deg, rgba(3, 10, 20, .84) 0%, rgba(3, 10, 20, .58) 48%, rgba(3, 10, 20, .18) 100%),
+        linear-gradient(0deg, rgba(3, 10, 20, .42), transparent 55%),
+        url("Resources/middelgrunden-offshore-wind.jpg");
+      background-position: center, center, center 54%;
+      background-size: cover;
+    }
+    .intro h2, .section-heading {
+      margin: 0;
+      font-size: clamp(38px, 5.3vw, 76px);
+      font-weight: 400;
+      letter-spacing: -.055em;
+      line-height: 1.02;
+    }
+    .intro-copy { max-width: 480px; padding-top: 40px; }
+    .intro-copy p { margin: 0 0 24px; color: rgba(255,255,255,.82); font-size: clamp(17px, 1.7vw, 23px); line-height: 1.5; }
+    .text-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 13px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid currentColor;
+      font-size: 14px;
+      text-decoration: none;
+    }
+    .intro-photo-credit {
+      position: absolute;
+      right: clamp(20px, 3vw, 44px);
+      bottom: 20px;
+      margin: 0;
+      color: rgba(255,255,255,.7);
+      font-size: 10px;
+    }
+    .intro-photo-credit a { color: inherit; text-underline-offset: 3px; }
+
+    .story { position: relative; height: 400svh; color: var(--paper); background: var(--night); }
+    .story-stage {
+      position: sticky;
+      top: 0;
+      height: 100svh;
+      min-height: 680px;
+      overflow: hidden;
+      isolation: isolate;
+      background: var(--night);
+    }
+    .story-backdrop, .story-backdrop::after { position: absolute; inset: 0; }
+    .story-backdrop { z-index: -2; overflow: hidden; }
+    .story-backdrop video { width: 100%; height: 100%; object-fit: cover; opacity: .48; }
+    .story-backdrop::after {
+      background: linear-gradient(90deg, rgba(0,0,0,.76), rgba(0,0,0,.12) 76%),
+        linear-gradient(0deg, rgba(0,0,0,.72), rgba(0,0,0,.12) 72%);
+      content: "";
+    }
+    .story-progress {
+      position: absolute;
+      z-index: 3;
+      top: 0;
+      right: 0;
+      left: 0;
+      height: 2px;
+      background: rgba(255,255,255,.2);
+    }
+    .story-progress span { display: block; width: 0; height: 100%; background: var(--paper); }
+    .story-frame {
+      width: min(100% - 64px, 1600px);
+      height: 100%;
+      min-height: 0;
+      margin-inline: auto;
+      display: grid;
+      grid-template-rows: 1fr auto;
+      padding-block: clamp(35px, 5.5vh, 78px);
+    }
+    .story-main {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(300px, .7fr);
+      align-items: center;
+      gap: 8vw;
+      padding-block: 35px;
+    }
+    .story-copy { max-width: 760px; transition: opacity .25s ease, transform .35s ease; }
+    .story-copy.changing { opacity: 0; transform: translateY(14px); }
+    .story-copy h2 {
+      max-width: 760px;
+      margin: 0;
+      font-size: clamp(48px, 7.3vw, 112px);
+      font-weight: 300;
+      letter-spacing: -.07em;
+      line-height: .93;
+    }
+    .story-bottom h3 { margin: 0 0 10px; font-size: 20px; font-weight: 400; }
+    .story-bottom p { max-width: 450px; min-height: 48px; margin: 0; color: rgba(255,255,255,.76); font-size: 15px; line-height: 1.65; }
+    .model-panel {
+      align-self: center;
+      padding: 22px;
+      border: 1px solid rgba(255,255,255,.33);
+      background: rgba(0,0,0,.2);
+      backdrop-filter: blur(12px);
+      transition: opacity .25s ease, transform .35s ease;
+    }
+    .model-panel.changing { opacity: .25; transform: translateY(9px); }
+    .model-panel-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,.24); }
+    .model-panel-head span:first-child { font-size: 12px; }
+    .model-panel-head span:last-child { color: rgba(255,255,255,.63); font-size: 10px; letter-spacing: .1em; text-transform: uppercase; }
+    .model-chart { display: block; width: 100%; height: auto; margin: 18px 0 12px; overflow: visible; }
+    .chart-grid { stroke: rgba(255,255,255,.22); stroke-width: 1; }
+    .chart-band { fill: rgba(255,255,255,.14); transition: d .35s ease; }
+    .chart-line { fill: none; stroke: #ffffff; stroke-width: 2; vector-effect: non-scaling-stroke; transition: d .35s ease; }
+    .chart-point { fill: var(--paper); }
+    .chart-labels { display: flex; justify-content: space-between; color: rgba(255,255,255,.62); font-size: 10px; }
+    .model-panel-foot { display: flex; justify-content: space-between; gap: 12px; margin-top: 17px; padding-top: 14px; border-top: 1px solid rgba(255,255,255,.24); }
+    .model-panel-foot span { color: rgba(255,255,255,.72); font-size: 11px; }
+    .story-footer { display: flex; align-items: end; justify-content: space-between; gap: 24px; }
+    .story-controls { display: grid; width: min(740px, 70%); grid-template-columns: repeat(4, 1fr); gap: 12px; }
+    .story-control {
+      display: grid;
+      gap: 11px;
+      padding: 12px 0 0;
+      border: 0;
+      border-top: 1px solid rgba(255,255,255,.38);
+      color: rgba(255,255,255,.58);
+      background: transparent;
+      text-align: left;
+      cursor: pointer;
+      transition: color .2s ease, border-color .2s ease;
+    }
+    .story-control span:first-child { font-size: 10px; letter-spacing: .12em; }
+    .story-control span:last-child { font-size: 12px; }
+    .story-control[aria-current="step"] { border-color: var(--paper); color: var(--paper); }
+    .story-hint { color: rgba(255,255,255,.66); font-size: 10px; letter-spacing: .08em; text-transform: uppercase; }
+    .story-hint span { display: inline-block; margin-left: 9px; font-size: 17px; vertical-align: -1px; }
+
+    .platform { padding-block: clamp(100px, 13vw, 185px); }
+    .section-top { display: flex; justify-content: space-between; align-items: end; gap: 40px; margin-bottom: 54px; }
+    .section-top .section-heading { max-width: 730px; }
+    .section-top > p { max-width: 330px; margin: 0 0 4px; color: var(--body); font-size: 16px; }
+    .site-lab {
+      display: grid;
+      grid-template-columns: minmax(270px, .7fr) minmax(0, 1.3fr);
+      color: var(--paper);
+      background: var(--ink);
+    }
+    .lab-controls { display: flex; flex-direction: column; padding: clamp(24px, 4vw, 52px); }
+    .lab-overline { margin: 0 0 14px; color: rgba(255,255,255,.56); font-size: 10px; letter-spacing: .14em; text-transform: uppercase; }
+    .lab-controls h3 { margin: 0; font-size: clamp(29px, 3.2vw, 43px); font-weight: 300; letter-spacing: -.05em; line-height: 1.04; }
+    .lab-description { margin: 14px 0 28px; color: rgba(255,255,255,.68); font-size: 13px; line-height: 1.65; }
+    .coordinate-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .lab-field { display: grid; gap: 7px; color: rgba(255,255,255,.66); font-size: 10px; letter-spacing: .08em; text-transform: uppercase; }
+    .lab-field input {
+      width: 100%;
+      min-width: 0;
+      padding: 10px 0;
+      border: 0;
+      border-bottom: 1px solid rgba(255,255,255,.35);
+      border-radius: 0;
+      outline: 0;
+      color: var(--paper);
+      background: transparent;
+      font-size: 16px;
+      font-variant-numeric: tabular-nums;
+    }
+    .lab-field input:focus { border-color: var(--paper); }
+    .range-row { display: flex; justify-content: space-between; gap: 12px; margin-top: 25px; color: rgba(255,255,255,.74); font-size: 12px; }
+    .range-row output { color: var(--paper); font-variant-numeric: tabular-nums; }
+    .lab-range { width: 100%; margin: 14px 0 5px; accent-color: var(--paper); cursor: pointer; }
+    .range-ends { display: flex; justify-content: space-between; color: rgba(255,255,255,.45); font-size: 10px; }
+    .lab-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 28px; }
+    .lab-actions .button { min-height: 43px; font-size: 12px; cursor: pointer; }
+    .lab-actions .button-dark { color: var(--ink); background: var(--paper); border-color: var(--paper); }
+    .lab-actions .button-dark:hover { color: var(--paper); background: transparent; }
+    .lab-status { min-height: 34px; margin: 15px 0 0; color: rgba(255,255,255,.56); font-size: 10px; line-height: 1.5; }
+    .lab-map { position: relative; min-height: 560px; overflow: hidden; background: var(--night); }
+    .lab-map svg { display: block; width: 100%; height: 100%; min-height: 560px; }
+    .sea-grid { stroke: rgba(255,255,255,.08); stroke-width: 1; }
+    .sea-contour { fill: none; stroke: rgba(255,255,255,.09); stroke-width: 1; }
+    .land { fill: #353535; stroke: rgba(255,255,255,.52); stroke-width: 1.2; }
+    .land-detail { fill: none; stroke: rgba(255,255,255,.13); stroke-width: 1; }
+    .range-ring { fill: rgba(69,94,174,.14); stroke: rgba(255,255,255,.56); stroke-width: 1.25; stroke-dasharray: 6 6; transition: r .45s ease; }
+    .array-line { stroke: rgba(255,255,255,.2); stroke-width: 1; stroke-dasharray: 3 6; }
+    .turbine-dot { fill: #ffffff; stroke: #455eae; stroke-width: 2; transform-box: fill-box; transform-origin: center; animation: turbine-appear .4s both; }
+    @keyframes turbine-appear { from { opacity: 0; scale: .2; } to { opacity: 1; scale: 1; } }
+    .site-pin { fill: #ffffff; stroke: #455eae; stroke-width: 3; }
+    .map-label { fill: rgba(255,255,255,.78); font: 11px Arial, sans-serif; letter-spacing: 1.5px; }
+    .map-label-soft { fill: rgba(255,255,255,.45); font: 9px Arial, sans-serif; letter-spacing: 1.2px; }
+    .map-callout { fill: #000000; stroke: rgba(255,255,255,.38); stroke-width: 1; }
+    .map-callout-text { fill: #ffffff; font: 11px Arial, sans-serif; }
+    .lab-map-key { position: absolute; right: 20px; bottom: 18px; left: 20px; display: flex; flex-wrap: wrap; gap: 14px; color: rgba(255,255,255,.72); font-size: 10px; pointer-events: none; }
+    .lab-map-key span { display: inline-flex; align-items: center; gap: 6px; }
+    .key-dot { width: 8px; height: 8px; display: inline-block; border: 1px solid var(--paper); border-radius: 50%; }
+    .key-range { width: 13px; height: 13px; display: inline-block; border: 1px dashed rgba(255,255,255,.8); border-radius: 50%; }
+    .lab-results { display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid rgba(255,255,255,.22); }
+    .lab-result { padding: 15px 10px 0 0; }
+    .lab-result + .lab-result { padding-left: 12px; border-left: 1px solid rgba(255,255,255,.22); }
+    .lab-result span { display: block; color: rgba(255,255,255,.5); font-size: 9px; letter-spacing: .08em; text-transform: uppercase; }
+    .lab-result strong { display: block; margin-top: 5px; color: var(--paper); font-size: 19px; font-weight: 400; font-variant-numeric: tabular-nums; }
+    .workflow-strip { display: grid; grid-template-columns: repeat(4, 1fr); margin-top: 38px; border-top: 1px solid var(--hairline); }
+    .workflow-step { padding: 16px 15px 0 0; }
+    .workflow-step + .workflow-step { padding-left: 15px; border-left: 1px solid var(--hairline); }
+    .workflow-step span { color: var(--muted); font-size: 10px; letter-spacing: .1em; }
+    .workflow-step p { margin: 9px 0 0; font-size: 13px; }
+
+    .intelligence { padding-block: clamp(95px, 13vw, 180px); color: var(--paper); background: var(--ink); }
+    .intelligence-intro { display: grid; grid-template-columns: 1fr .8fr; gap: 10vw; align-items: end; margin-bottom: 65px; }
+    .intelligence h2 { max-width: 800px; margin: 0; font-size: clamp(44px, 6vw, 86px); font-weight: 300; letter-spacing: -.065em; line-height: .96; }
+    .intelligence-intro > p { max-width: 430px; margin: 0 0 5px; color: rgba(255,255,255,.72); font-size: 17px; line-height: 1.6; }
+    .model-grid { display: grid; grid-template-columns: repeat(4, 1fr); border-top: 1px solid rgba(255,255,255,.28); }
+    .model-card { min-height: 255px; padding: 22px 22px 25px 0; border-bottom: 1px solid rgba(255,255,255,.28); }
+    .model-card + .model-card { padding-left: 22px; border-left: 1px solid rgba(255,255,255,.28); }
+    .model-visual { display: flex; height: 65px; align-items: end; gap: 5px; margin: 25px 0 20px; border-bottom: 1px solid rgba(255,255,255,.28); }
+    .model-visual i { flex: 1; display: block; height: var(--bar-height); background: rgba(255,255,255,.24); transform-origin: bottom; animation: bar-rise .7s ease both; }
+    .model-visual i:nth-child(2n) { background: rgba(255,255,255,.55); }
+    .model-visual i:last-child { background: #455eae; }
+    .model-visual.chart i { clip-path: polygon(0 60%, 100% 20%, 100% 100%, 0 100%); }
+    .model-visual.array { display: grid; grid-template-columns: repeat(9, 1fr); align-content: center; align-items: center; gap: 8px; border: 0; }
+    .model-visual.array i { width: 7px; height: 7px; justify-self: center; border: 1px solid rgba(255,255,255,.7); border-radius: 50%; background: transparent; transform: scale(var(--dot-scale,1)); }
+    .model-visual.array i:nth-child(5n) { background: var(--paper); }
+    @keyframes bar-rise { from { transform: scaleY(.18); opacity: .4; } to { transform: scaleY(1); opacity: 1; } }
+    .model-card h3 { margin: 0 0 10px; font-size: 19px; font-weight: 400; }
+    .model-card p { margin: 0; color: rgba(255,255,255,.7); font-size: 13px; line-height: 1.65; }
+    .intelligence-note { margin: 17px 0 0; color: rgba(255,255,255,.5); font-size: 11px; }
+
+    .sustainability {
+      padding-block: clamp(88px, 11vw, 150px);
+      color: var(--paper);
+      background: var(--brand);
+    }
+    .sustainability-inner { display: grid; grid-template-columns: .92fr 1.08fr; gap: 10vw; align-items: start; }
+    .sustainability h2 { margin: 0; font-size: clamp(42px, 5.6vw, 80px); font-weight: 300; letter-spacing: -.06em; line-height: .98; }
+    .clean-energy {
+      position: relative;
+      display: inline-block;
+      color: #d7ff9a;
+      font-weight: 500;
+      white-space: nowrap;
+      text-shadow: 0 0 28px rgba(190, 255, 166, .2);
+    }
+    .clean-energy::after {
+      position: absolute;
+      right: .04em;
+      bottom: -.06em;
+      left: .02em;
+      height: 3px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #d7ff9a, #72eed4);
+      box-shadow: 0 0 14px rgba(136, 255, 207, .5);
+      content: "";
+    }
+    .sustainability-copy { padding-top: 42px; }
+    .sustainability-copy > p { max-width: 560px; margin: 0 0 36px; color: rgba(255,255,255,.85); font-size: clamp(17px, 1.7vw, 23px); line-height: 1.5; }
+    .sustainability-list { display: grid; grid-template-columns: 1fr 1fr; gap: 0 24px; border-top: 1px solid rgba(255,255,255,.35); }
+    .sustainability-list span { padding: 14px 0; border-bottom: 1px solid rgba(255,255,255,.35); font-size: 13px; }
+
+    .proof { padding-block: clamp(82px, 10vw, 140px); }
+    .proof-heading { display: flex; align-items: end; justify-content: space-between; gap: 40px; margin-bottom: 38px; }
+    .proof-heading h2 { max-width: 760px; margin: 0; font-size: clamp(42px, 5.7vw, 78px); font-weight: 400; letter-spacing: -.06em; line-height: .98; }
+    .proof-heading p { max-width: 310px; margin: 0 0 5px; color: var(--body); font-size: 15px; line-height: 1.55; }
+    .financial-report {
+      overflow: hidden;
+      color: var(--paper);
+      background: #080d16;
+    }
+    .finance-overview {
+      display: grid;
+      grid-template-columns: minmax(250px, .72fr) 1.28fr;
+      gap: clamp(28px, 5vw, 72px);
+      align-items: center;
+      padding: clamp(28px, 4.5vw, 62px);
+      background:
+        radial-gradient(ellipse at 82% 45%, rgba(69,94,174,.22), transparent 48%),
+        linear-gradient(135deg, #0b1322, #080d16 72%);
+    }
+    .finance-summary { max-width: 360px; }
+    .finance-summary h3 { margin: 0; font-size: clamp(28px, 3.2vw, 42px); font-weight: 300; letter-spacing: -.05em; line-height: 1.02; }
+    .finance-summary p { margin: 16px 0 0; color: rgba(255,255,255,.65); font-size: 14px; line-height: 1.65; }
+    .finance-visual {
+      min-width: 0;
+      padding: 20px 22px 15px;
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.035);
+    }
+    .finance-visual-head, .finance-visual-foot { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+    .finance-visual-head { color: rgba(255,255,255,.88); font-size: 12px; }
+    .finance-visual-head span:last-child, .finance-visual-foot { color: rgba(255,255,255,.48); font-size: 10px; }
+    .finance-chart { display: block; width: 100%; height: auto; margin: 15px 0 7px; overflow: visible; }
+    .finance-chart-grid { stroke: rgba(255,255,255,.12); stroke-width: 1; }
+    .finance-chart-area { fill: url(#finance-area); }
+    .finance-chart-line { fill: none; stroke: #9db8ff; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+    .finance-chart-point { fill: #d7ff9a; stroke: #101927; stroke-width: 4; }
+    .finance-chart-label { fill: rgba(255,255,255,.5); font: 10px Arial, sans-serif; }
+    .finance-visual-foot { padding-top: 12px; border-top: 1px solid rgba(255,255,255,.12); }
+    .finance-metrics { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); background: #f0f2f4; color: var(--ink); }
+    .finance-metric { position: relative; min-height: 108px; padding: 19px 16px; border-right: 1px solid rgba(0,0,0,.1); }
+    .finance-metric:last-child { border-right: 0; }
+    .finance-metric::before { display: block; width: 19px; height: 3px; margin-bottom: 16px; background: var(--brand); content: ""; }
+    .finance-metric strong { display: block; font-size: 13px; font-weight: 700; letter-spacing: .04em; }
+    .finance-metric span { display: block; margin-top: 5px; color: #626873; font-size: 11px; line-height: 1.4; }
+    .proof .intelligence-note { margin: 14px 0 0; color: #747981; font-size: 11px; }
+
+    .contact {
+      padding-block: clamp(85px, 11vw, 150px);
+      color: var(--paper);
+      background: var(--ink);
+    }
+    .contact-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 10vw; }
+    .contact h2 { max-width: 650px; margin: 0; font-size: clamp(46px, 6.5vw, 92px); font-weight: 300; letter-spacing: -.06em; line-height: .96; }
+    .contact-form { max-width: 520px; padding-top: 40px; }
+    .contact-form > p { margin: 0 0 28px; color: rgba(255,255,255,.72); font-size: 15px; }
+    .field { display: grid; gap: 7px; margin-bottom: 18px; }
+    .field label { color: rgba(255,255,255,.72); font-size: 12px; }
+    .field input {
+      width: 100%;
+      min-height: 44px;
+      padding: 8px 0;
+      border: 0;
+      border-bottom: 1px solid rgba(255,255,255,.45);
+      border-radius: 0;
+      outline: 0;
+      color: var(--paper);
+      background: transparent;
+    }
+    .field input:focus { border-color: var(--paper); }
+    .field input::placeholder { color: rgba(255,255,255,.48); }
+    .form-note, .form-status { color: rgba(255,255,255,.62); font-size: 11px; }
+    .form-note { margin: 16px 0 0; }
+    .form-status { min-height: 20px; margin: 12px 0 0; }
+    .contact-form .button { margin-top: 8px; cursor: pointer; }
+
+    .site-footer { padding-block: 25px; color: var(--paper); background: var(--ink); }
+    .footer-inner { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding-top: 22px; border-top: 1px solid rgba(255,255,255,.25); }
+    .footer-inner small { color: rgba(255,255,255,.62); font-size: 11px; }
+    .back-top { font-size: 12px; text-decoration: none; }
+
+    :focus-visible { outline: 2px solid var(--brand); outline-offset: 4px; }
+    .site-header :focus-visible, .contact :focus-visible { outline-color: var(--paper); }
+    @media (max-width: 760px) {
+      .wrap { width: min(100% - 40px, 1600px); }
+      .header-inner { min-height: 72px; }
+      .header-nav { gap: 17px; }
+      .header-nav a { font-size: 11px; }
+      .header-nav a:nth-child(2) { display: none; }
+      .hero { min-height: 780px; min-height: 100svh; }
+      .hero-video { object-position: 58% center; }
+      .hero-copy { width: calc(100% - 40px); }
+      .hero h1 { font-size: clamp(52px, 12vw, 86px); }
+      .intro, .sustainability-inner, .contact-inner { grid-template-columns: 1fr; gap: 28px; }
+      .intro { min-height: 600px; grid-template-columns: 1fr; gap: 28px; align-content: center; padding: 88px 20px 105px; background-position: center, center, 58% center; }
+      .intro-copy, .sustainability-copy, .contact-form { padding-top: 0; }
+      .intro-photo-credit { right: 20px; left: 20px; bottom: 18px; }
+      .story { height: 360svh; }
+      .story-stage { min-height: 700px; }
+      .story-frame { width: min(100% - 40px, 1600px); padding-block: 28px; }
+      .story-main { grid-template-columns: 1fr; align-content: center; gap: 28px; padding-block: 26px; }
+      .story-copy h2 { max-width: 620px; font-size: clamp(47px, 11vw, 76px); }
+      .story-bottom h3 { margin-bottom: 6px; font-size: 18px; }
+      .story-bottom p { min-height: 42px; font-size: 13px; }
+      .model-panel { width: min(100%, 500px); padding: 15px; }
+      .model-chart { max-height: 115px; margin-block: 12px 8px; }
+      .story-controls { width: 100%; grid-template-columns: repeat(4, 1fr); gap: 9px; }
+      .story-control { gap: 8px; }
+      .story-control span:last-child { font-size: 10px; }
+      .story-hint { display: none; }
+      .section-top { display: block; }
+      .section-top > p { margin-top: 22px; }
+      .site-lab { grid-template-columns: 1fr; }
+      .lab-map, .lab-map svg { min-height: 430px; }
+      .workflow-strip { grid-template-columns: 1fr 1fr; row-gap: 18px; }
+      .workflow-step:nth-child(odd) { padding-left: 0; border-left: 0; }
+      .workflow-step:nth-child(even) { padding-left: 15px; border-left: 1px solid var(--hairline); }
+      .lab-controls { padding: 28px 22px; }
+      .lab-map, .lab-map svg { min-height: 390px; }
+      .workflow-strip { grid-template-columns: 1fr 1fr; row-gap: 18px; }
+      .workflow-step:nth-child(odd) { padding-left: 0; border-left: 0; }
+      .workflow-step:nth-child(even) { padding-left: 15px; border-left: 1px solid var(--hairline); }
+      .sustainability-list { grid-template-columns: 1fr; }
+      .intelligence-intro { grid-template-columns: 1fr; gap: 24px; }
+      .model-grid { grid-template-columns: 1fr 1fr; }
+      .model-card, .model-card + .model-card { min-height: 255px; padding: 18px 12px 20px 0; }
+      .model-card:nth-child(even) { padding-left: 12px; border-left: 1px solid rgba(255,255,255,.28); }
+      .model-visual { height: 48px; margin: 19px 0 16px; }
+      .model-visual.array { height: 48px; }
+      .model-card h3 { font-size: 16px; }
+      .proof-heading { display: block; margin-bottom: 24px; }
+      .proof-heading p { margin-top: 18px; }
+      .finance-overview { grid-template-columns: 1fr; gap: 26px; padding: 26px 20px; }
+      .finance-visual { padding: 16px 13px 12px; }
+      .finance-metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .finance-metric { min-height: 94px; padding: 15px 13px; border-bottom: 1px solid rgba(0,0,0,.1); }
+      .finance-metric:nth-child(2n) { border-right: 0; }
+      .finance-metric:nth-last-child(-n+2) { border-bottom: 0; }
+      .finance-metric::before { margin-bottom: 11px; }
+      .contact-inner { gap: 36px; }
+      .footer-inner { align-items: flex-start; }
+    }
+    @media (max-width: 420px) {
+      .wordmark { gap: 7px; font-size: 13px; }
+      .wordmark-mark { width: 24px; }
+      .header-nav { gap: 10px; }
+      .header-nav a { font-size: 10px; }
+      .story-frame { width: min(100% - 32px, 1600px); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="wordmark" href="#top" aria-label="Aeolus AI home">
+        <svg class="wordmark-mark" viewBox="0 0 32 32" aria-hidden="true">
+          <path d="M16 5v21M16 9 7 4M16 9l9-5M16 9l1 11M16 20l-8 7M16 20l10 5"/>
+        </svg>
+        Aeolus AI
+      </a>
+      <nav class="header-nav" aria-label="Main navigation">
+        <a href="#platform">Platform</a>
+        <a href="#approach">Approach</a>
+        <a href="#intelligence">Machine learning</a>
+        <a class="nav-cta" href="#contact">Request a demo <span aria-hidden="true">↗</span></a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero" id="top" aria-labelledby="hero-title">
+      <video class="hero-video" autoplay muted loop playsinline preload="metadata" aria-hidden="true">
+        <source src="Resources/857d4e163d8b8de6dd634d741ec57dc4.mp4" type="video/mp4">
+      </video>
+      <div class="wrap hero-copy">
+        <h1 id="hero-title">Machine learning for a cleaner energy future.</h1>
+      </div>
+    </section>
+
+    <section class="intro" id="introduction">
+      <div>
+        <h2>Choose a point. Plan a wind farm.</h2>
+      </div>
+      <div class="intro-copy">
+        <p>Set a project area in the Bay of Bengal. Aeolus AI models a turbine layout and its energy potential.</p>
+        <a class="text-link" href="#platform">Try the site planner <span class="arrow" aria-hidden="true">→</span></a>
+      </div>
+      <p class="intro-photo-credit">Photo: Kim Hansen; edited by Richard Bartz and Kim Hansen · <a href="https://creativecommons.org/licenses/by-sa/3.0/" target="_blank" rel="noreferrer">CC BY-SA 3.0</a></p>
+    </section>
+
+    <section class="story" id="approach" aria-label="Machine learning across an offshore wind project">
+      <div class="story-stage">
+        <div class="story-progress" aria-hidden="true"><span></span></div>
+        <div class="story-backdrop">
+          <video autoplay muted loop playsinline preload="metadata" aria-hidden="true">
+          <source src="Resources/857d4e163d8b8de6dd634d741ec57dc4.mp4" type="video/mp4">
+          </video>
+        </div>
+        <div class="story-frame">
+          <div class="story-main">
+          <div class="story-copy" id="story-copy" aria-live="polite">
+            <h2 id="story-title">Model the forces behind every decision.</h2>
+            <div class="story-bottom">
+              <h3 id="story-subtitle">Read the offshore resource</h3>
+              <p id="story-description">Long-term wind records and site conditions shape the resource estimate.</p>
+            </div>
+          </div>
+          <div class="model-panel" id="model-panel" aria-label="Illustrative model output">
+            <div class="model-panel-head">
+              <span id="chart-title">Wind resource signal</span>
+              <span>Concept</span>
+            </div>
+            <svg class="model-chart" viewBox="0 0 520 190" role="img" aria-label="Illustrative energy forecast trend with uncertainty range">
+              <path class="chart-grid" d="M0 24H520M0 70H520M0 116H520M0 162H520"></path>
+              <path id="chart-band" class="chart-band" d="M0 133 C55 118 72 112 112 120 S185 82 230 96 S300 55 347 83 S420 39 520 48 L520 112 C450 119 407 137 347 128 S278 154 230 143 S157 167 112 157 S53 162 0 174Z"></path>
+              <path id="chart-line" class="chart-line" d="M0 152 C55 139 72 127 112 139 S185 103 230 119 S300 79 347 104 S420 65 520 78"></path>
+              <circle id="chart-point" class="chart-point" cx="520" cy="78" r="4"></circle>
+            </svg>
+            <div class="chart-labels"><span>Historical signal</span><span>Forecast horizon</span></div>
+            <div class="model-panel-foot">
+              <span id="model-method">ERA5 wind resource</span>
+              <span id="model-horizon">SITE CONDITIONS</span>
+            </div>
+          </div>
+          </div>
+          <div class="story-footer">
+          <div class="story-controls" role="group" aria-label="Choose an offshore project stage">
+            <button class="story-control" type="button" aria-label="Stage 1: Read the offshore resource" aria-current="step" data-step="0"><span>01</span><span>Resource</span></button>
+            <button class="story-control" type="button" aria-label="Stage 2: Correct resource bias" data-step="1"><span>02</span><span>Bias correction</span></button>
+            <button class="story-control" type="button" aria-label="Stage 3: Model turbine interactions" data-step="2"><span>03</span><span>Wake & layout</span></button>
+            <button class="story-control" type="button" aria-label="Stage 4: Forecast annual and long-term energy yield" data-step="3"><span>04</span><span>Energy outlook</span></button>
+          </div>
+          <div class="story-hint">Scroll to explore <span aria-hidden="true">↓</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="wrap platform" id="platform">
+      <div class="section-top">
+        <div>
+          <h2 class="section-heading">Set a site. See a plan.</h2>
+        </div>
+        <p>Choose coordinates and range. Preview a candidate offshore array.</p>
+      </div>
+      <div class="site-lab" id="site-lab">
+      <div class="lab-controls">
+        <h3>Bay of Bengal</h3>
+        <p class="lab-description">Choose a coordinate and set your project radius.</p>
+          <div class="coordinate-fields">
+            <label class="lab-field" for="site-latitude">Latitude
+              <input id="site-latitude" type="number" min="5" max="22" step="0.01" value="15.50" inputmode="decimal">
+            </label>
+            <label class="lab-field" for="site-longitude">Longitude
+              <input id="site-longitude" type="number" min="80" max="96" step="0.01" value="89.20" inputmode="decimal">
+            </label>
+          </div>
+          <div class="range-row"><label for="site-radius">Project radius</label><output id="radius-value" for="site-radius">30 km</output></div>
+          <input class="lab-range" id="site-radius" type="range" min="10" max="50" step="5" value="30">
+          <div class="range-ends"><span>10 km</span><span>50 km</span></div>
+          <div class="lab-actions">
+            <button class="button button-dark" id="preview-layout" type="button">Preview turbine array <span class="arrow" aria-hidden="true">→</span></button>
+            <button class="button" id="reset-site" type="button">Reset example</button>
+          </div>
+          <p class="lab-status" id="layout-status" role="status" aria-live="polite">Illustrative layout preview. Machine-learning optimization is not connected.</p>
+          <div class="lab-results" aria-label="Illustrative site summary">
+            <div class="lab-result"><span>Candidate points</span><strong id="candidate-count">0</strong></div>
+            <div class="lab-result"><span>Range area</span><strong id="range-area">0 km²</strong></div>
+            <div class="lab-result"><span>Selected radius</span><strong id="result-radius">30 km</strong></div>
+          </div>
+        </div>
+        <div class="lab-map">
+          <svg id="site-map" viewBox="0 0 900 600" role="img" aria-label="Illustrative offshore project area in the Bay of Bengal">
+            <defs>
+              <pattern id="map-grid" width="60" height="60" patternUnits="userSpaceOnUse">
+                <path d="M60 0H0V60" class="sea-grid" fill="none"></path>
+              </pattern>
+            </defs>
+            <rect width="900" height="600" fill="#0b1322"></rect>
+            <rect width="900" height="600" fill="url(#map-grid)"></rect>
+            <path class="sea-contour" d="M120 210 C230 170 292 204 378 179 S538 176 628 194 S758 185 870 143"></path>
+            <path class="sea-contour" d="M112 235 C224 195 296 230 386 205 S544 201 635 220 S762 211 880 169"></path>
+            <path class="sea-contour" d="M122 430 C240 392 296 420 385 396 S546 399 634 416 S771 410 885 370"></path>
+            <path class="land" d="M0 0H182C178 40 170 62 184 88C198 112 177 136 190 158C206 181 188 204 201 228C216 255 198 281 211 304C225 331 205 356 214 381C225 411 207 435 215 459C224 492 201 518 208 545C213 567 207 583 203 600H0Z"></path>
+            <path class="land-detail" d="M18 45C90 76 124 59 174 78M9 199C86 224 143 210 197 238M12 374C97 390 146 367 211 394M0 520C78 502 146 531 208 549"></path>
+            <path class="land" d="M506 0H900V138C849 130 812 151 772 145C736 138 708 157 671 146C634 135 609 153 578 141C551 131 527 143 504 128C520 101 506 82 518 60C526 39 508 19 506 0Z"></path>
+            <path class="land-detail" d="M560 30C633 50 687 35 735 56S827 49 889 64M536 104C600 119 651 99 704 116S815 101 891 120"></path>
+            <text class="map-label" x="48" y="46">INDIA</text>
+            <text class="map-label" x="715" y="43">BANGLADESH</text>
+            <text class="map-label-soft" x="278" y="117">BAY OF BENGAL</text>
+            <text class="map-label-soft" x="755" y="567">ILLUSTRATIVE SITE VIEW</text>
+            <g id="site-overlay">
+              <circle id="range-ring" class="range-ring" cx="472" cy="324" r="96"></circle>
+              <g id="array-lines"></g>
+              <g id="turbine-points"></g>
+              <circle id="site-pin" class="site-pin" cx="472" cy="324" r="6"></circle>
+              <g id="site-callout" transform="translate(486 307)">
+                <rect class="map-callout" width="144" height="27" rx="2"></rect>
+                <text class="map-callout-text" id="map-coordinate" x="10" y="18">15.50° N · 89.20° E</text>
+              </g>
+            </g>
+          </svg>
+          <div class="lab-map-key" aria-hidden="true">
+            <span><i class="key-dot"></i> Candidate turbine position</span>
+            <span><i class="key-range"></i> Project radius</span>
+          </div>
+        </div>
+      </div>
+      <div class="workflow-strip" aria-label="Aeolus offshore wind planning workflow">
+        <div class="workflow-step"><span>01</span><p>Choose a coordinate</p></div>
+        <div class="workflow-step"><span>02</span><p>Set the range</p></div>
+        <div class="workflow-step"><span>03</span><p>Place turbines</p></div>
+        <div class="workflow-step"><span>04</span><p>Estimate energy</p></div>
+      </div>
+    </section>
+
+    <section class="intelligence" id="intelligence">
+      <div class="wrap">
+        <div class="intelligence-intro">
+          <div>
+            <h2>Machine learning for offshore wind.</h2>
+          </div>
+          <p>Models help refine wind estimates, turbine placement, and expected energy yield.</p>
+        </div>
+        <div class="model-grid">
+          <article class="model-card">
+            <div class="model-visual chart" aria-hidden="true">
+              <i style="--bar-height:30%"></i><i style="--bar-height:43%"></i><i style="--bar-height:38%"></i><i style="--bar-height:55%"></i><i style="--bar-height:47%"></i><i style="--bar-height:70%"></i><i style="--bar-height:63%"></i><i style="--bar-height:85%"></i>
+            </div>
+            <h3>Wind resource</h3>
+            <p>Historical bias correction · XGBoost</p>
+          </article>
+          <article class="model-card">
+            <div class="model-visual array" aria-hidden="true">
+              <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+              <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+              <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+            </div>
+            <h3>Turbine layout</h3>
+            <p>Wake-aware placement · Bayesian optimization</p>
+          </article>
+          <article class="model-card">
+            <div class="model-visual chart" aria-hidden="true">
+              <i style="--bar-height:68%"></i><i style="--bar-height:45%"></i><i style="--bar-height:57%"></i><i style="--bar-height:36%"></i><i style="--bar-height:62%"></i><i style="--bar-height:47%"></i><i style="--bar-height:75%"></i><i style="--bar-height:88%"></i>
+            </div>
+            <h3>Annual outlook</h3>
+            <p>One-year forecast · Prophet + XGBoost</p>
+          </article>
+          <article class="model-card">
+            <div class="model-visual chart" aria-hidden="true">
+              <i style="--bar-height:28%"></i><i style="--bar-height:36%"></i><i style="--bar-height:34%"></i><i style="--bar-height:51%"></i><i style="--bar-height:56%"></i><i style="--bar-height:65%"></i><i style="--bar-height:71%"></i><i style="--bar-height:88%"></i>
+            </div>
+            <h3>Long-term outlook</h3>
+            <p>Ten-year forecast · Prophet + XGBoost</p>
+          </article>
+        </div>
+        <p class="intelligence-note">Forecasts are estimates, not guaranteed output.</p>
+      </div>
+    </section>
+
+    <section class="sustainability" id="sustainability">
+      <div class="wrap sustainability-inner">
+        <div>
+          <h2><span class="clean-energy">Clean energy</span> is a global ambition.</h2>
+        </div>
+        <div class="sustainability-copy">
+          <p>By helping teams assess offshore wind potential, Aeolus AI supports the global ambitions for affordable clean energy and climate action expressed in UN Sustainable Development Goals 7 and 13.</p>
+          <div class="sustainability-list" aria-label="Aeolus AI contribution to offshore wind planning">
+            <span>Explore renewable energy potential</span>
+            <span>Make data-informed site decisions</span>
+            <span>Plan machine-learning-led turbine layouts</span>
+            <span>Understand energy and project outlooks</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="wrap proof" id="proof">
+      <div class="proof-heading">
+        <h2>See the economics behind the energy.</h2>
+        <p>Bring project costs, energy scenarios, and returns into one financial outlook.</p>
+      </div>
+      <div class="financial-report">
+        <div class="finance-overview">
+          <div class="finance-summary">
+          <h3>Financial report</h3>
+            <p>Understand the assumptions behind an offshore wind project, from first investment to long-term returns.</p>
+          </div>
+          <div class="finance-visual">
+            <div class="finance-visual-head">
+              <span>Energy yield outlook</span>
+              <span>Illustrative</span>
+            </div>
+            <svg class="finance-chart" viewBox="0 0 680 230" role="img" aria-label="Illustrative offshore project energy yield trend without project-specific values">
+              <defs>
+                <linearGradient id="finance-area" x1="0" x2="0" y1="0" y2="1">
+                  <stop offset="0" stop-color="#7895e8" stop-opacity=".42"></stop>
+                  <stop offset="1" stop-color="#7895e8" stop-opacity="0"></stop>
+                </linearGradient>
+              </defs>
+              <path class="finance-chart-grid" d="M24 35H660M24 85H660M24 135H660M24 185H660"></path>
+              <path class="finance-chart-area" d="M24 171 C95 164 112 135 173 142 S257 113 318 123 S397 85 455 98 S544 57 660 49 V185 H24Z"></path>
+              <path class="finance-chart-line" d="M24 171 C95 164 112 135 173 142 S257 113 318 123 S397 85 455 98 S544 57 660 49"></path>
+              <circle class="finance-chart-point" cx="660" cy="49" r="6"></circle>
+              <text class="finance-chart-label" x="24" y="215">SITE INPUTS</text>
+              <text class="finance-chart-label" x="300" y="215">ENERGY OUTLOOK</text>
+              <text class="finance-chart-label" x="586" y="215">RETURNS</text>
+            </svg>
+            <div class="finance-visual-foot">
+              <span>Modelled production</span>
+              <span>Project horizon →</span>
+            </div>
+          </div>
+        </div>
+        <div class="finance-metrics" aria-label="Financial report measures">
+          <div class="finance-metric"><strong>CAPEX</strong><span>Turbine · installation · grid</span></div>
+          <div class="finance-metric"><strong>OPEX</strong><span>Operations · maintenance</span></div>
+          <div class="finance-metric"><strong>LCOE</strong><span>Cost of energy</span></div>
+          <div class="finance-metric"><strong>IRR</strong><span>Project returns</span></div>
+          <div class="finance-metric"><strong>PAYBACK</strong><span>Payback period</span></div>
+          <div class="finance-metric"><strong>P50 / P90</strong><span>Energy scenarios</span></div>
+        </div>
+      </div>
+      <p class="intelligence-note">Illustrative visual only. Financial estimates depend on project inputs and assumptions.</p>
+    </section>
+
+    <section class="contact" id="contact">
+      <div class="wrap contact-inner">
+        <div>
+          <h2>Explore your offshore site.</h2>
+        </div>
+        <form class="contact-form" id="demo-form">
+          <p>Request an Aeolus AI demo.</p>
+          <div class="field">
+            <label for="name">Name</label>
+            <input id="name" name="name" autocomplete="name" placeholder="Your name" required>
+          </div>
+          <div class="field">
+            <label for="email">Work email</label>
+            <input id="email" name="email" type="email" autocomplete="email" placeholder="you@company.com" required>
+          </div>
+          <button class="button" type="submit">Request a demo <span class="arrow" aria-hidden="true">→</span></button>
+          <p class="form-note">Frontend preview only. This form does not send or store your information.</p>
+          <p class="form-status" id="form-status" role="status" aria-live="polite"></p>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <a class="wordmark" href="#top">
+        <svg class="wordmark-mark" viewBox="0 0 32 32" aria-hidden="true">
+          <path d="M16 5v21M16 9 7 4M16 9l9-5M16 9l1 11M16 20l-8 7M16 20l10 5"/>
+        </svg>
+        Aeolus AI
+      </a>
+      <small>Offshore wind, understood.</small>
+      <a class="back-top" href="#top">Back to top ↑</a>
+    </div>
+  </footer>
+
+  <script>
+    const story = document.querySelector(".story");
+    const storyCopy = document.querySelector("#story-copy");
+    const storyTitle = document.querySelector("#story-title");
+    const storySubtitle = document.querySelector("#story-subtitle");
+    const storyDescription = document.querySelector("#story-description");
+    const storyProgress = document.querySelector(".story-progress span");
+    const storyControls = [...document.querySelectorAll(".story-control")];
+    const modelPanel = document.querySelector("#model-panel");
+    const chartTitle = document.querySelector("#chart-title");
+    const chartLine = document.querySelector("#chart-line");
+    const chartBand = document.querySelector("#chart-band");
+    const chartPoint = document.querySelector("#chart-point");
+    const modelMethod = document.querySelector("#model-method");
+    const modelHorizon = document.querySelector("#model-horizon");
+    const storySteps = [
+      {
+        title: "Model the forces behind every decision.",
+        subtitle: "Read the offshore resource",
+        description: "Long-term wind records and site conditions shape the resource estimate.",
+        chartTitle: "Wind resource signal",
+        method: "ERA5 · 10-year wind record",
+        horizon: "SITE CONDITIONS",
+        line: "M0 152 C55 139 72 127 112 139 S185 103 230 119 S300 79 347 104 S420 65 520 78",
+        band: "M0 133 C55 118 72 112 112 120 S185 82 230 96 S300 55 347 83 S420 39 520 48 L520 112 C450 119 407 137 347 128 S278 154 230 143 S157 167 112 157 S53 162 0 174Z",
+        point: 78
+      },
+      {
+        title: "Correct the signal before looking ahead.",
+        subtitle: "Refine the resource estimate",
+        description: "XGBoost corrects resource-estimate bias against historical signals.",
+        chartTitle: "Illustrative bias correction",
+        method: "XGBoost regression",
+        horizon: "RESOURCE MODEL",
+        line: "M0 149 C58 142 74 119 120 131 S174 100 225 112 S291 73 344 91 S414 43 463 62 S498 51 520 39",
+        band: "M0 126 C58 117 74 96 120 111 S174 77 225 91 S291 58 344 71 S414 27 463 47 S498 34 520 22 L520 96 C495 105 486 111 463 101 S405 127 344 111 S275 147 225 131 S166 157 120 148 S55 165 0 172Z",
+        point: 39
+      },
+      {
+        title: "Place turbines with the whole array in view.",
+        subtitle: "Account for wake and layout effects",
+        description: "Bayesian optimization searches turbine layouts with wake effects in view.",
+        chartTitle: "Array interaction scenario",
+        method: "Bayesian optimization",
+        horizon: "WAKE-AWARE LAYOUT",
+        line: "M0 75 C62 79 74 89 120 83 S177 104 225 96 S286 119 344 108 S407 132 463 119 S500 138 520 129",
+        band: "M0 54 C62 57 74 67 120 61 S177 81 225 73 S286 96 344 85 S407 109 463 96 S500 115 520 106 L520 151 C500 160 480 141 463 152 S397 151 344 143 S277 151 225 132 S166 117 120 111 S55 100 0 96Z",
+        point: 129
+      },
+      {
+        title: "Look from the first year to the longer horizon.",
+        subtitle: "Review energy yield and uncertainty",
+        description: "Prophet and XGBoost forecast one- and ten-year energy yield, with P50/P90 scenarios.",
+        chartTitle: "Illustrative long-range outlook",
+        method: "Prophet + XGBoost",
+        horizon: "1-YEAR / 10-YEAR",
+        line: "M0 140 C55 130 81 136 120 116 S172 119 225 94 S290 101 344 76 S405 84 463 54 S495 60 520 35",
+        band: "M0 116 C55 105 81 110 120 91 S172 95 225 70 S290 77 344 52 S405 61 463 31 S495 36 520 15 L520 69 C495 85 485 89 463 91 S397 115 344 101 S279 123 225 119 S163 144 120 139 S52 154 0 165Z",
+        point: 35
+      }
+    ];
+    let activeStep = -1;
+    let ticking = false;
+
+    function showStep(index) {
+      if (index === activeStep) return;
+      activeStep = index;
+      const step = storySteps[index];
+      storyCopy.classList.add("changing");
+      modelPanel.classList.add("changing");
+      window.setTimeout(() => {
+        storyCopy.classList.remove("changing");
+        modelPanel.classList.remove("changing");
+      }, 160);
+      storyTitle.textContent = step.title;
+      storySubtitle.textContent = step.subtitle;
+      storyDescription.textContent = step.description;
+      chartTitle.textContent = step.chartTitle;
+      chartLine.setAttribute("d", step.line);
+      chartBand.setAttribute("d", step.band);
+      chartPoint.setAttribute("cy", step.point);
+      modelMethod.textContent = step.method;
+      modelHorizon.textContent = step.horizon;
+      storyControls.forEach((control, controlIndex) => {
+        if (controlIndex === index) control.setAttribute("aria-current", "step");
+        else control.removeAttribute("aria-current");
+      });
+    }
+
+    function updateStory() {
+      const range = story.offsetHeight - window.innerHeight;
+      const progress = range > 0
+        ? Math.max(0, Math.min(1, (window.scrollY - story.offsetTop) / range))
+        : 0;
+      storyProgress.style.width = `${progress * 100}%`;
+      showStep(Math.min(storySteps.length - 1, Math.floor(progress * storySteps.length)));
+      ticking = false;
+    }
+
+    window.addEventListener("scroll", () => {
+      if (!ticking) {
+        window.requestAnimationFrame(updateStory);
+        ticking = true;
+      }
+    }, { passive: true });
+    window.addEventListener("resize", updateStory);
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      document.querySelectorAll("video[autoplay]").forEach(video => video.pause());
+    }
+    storyControls.forEach(control => {
+      control.addEventListener("click", () => {
+        const index = Number(control.dataset.step);
+        const range = story.offsetHeight - window.innerHeight;
+        const destination = story.offsetTop + range * (index / storySteps.length);
+        window.scrollTo({ top: destination, behavior: "smooth" });
+      });
+    });
+    updateStory();
+
+    const latitudeInput = document.querySelector("#site-latitude");
+    const longitudeInput = document.querySelector("#site-longitude");
+    const radiusInput = document.querySelector("#site-radius");
+    const radiusValue = document.querySelector("#radius-value");
+    const rangeRing = document.querySelector("#range-ring");
+    const sitePin = document.querySelector("#site-pin");
+    const siteCallout = document.querySelector("#site-callout");
+    const mapCoordinate = document.querySelector("#map-coordinate");
+    const turbinePoints = document.querySelector("#turbine-points");
+    const arrayLines = document.querySelector("#array-lines");
+    const candidateCount = document.querySelector("#candidate-count");
+    const rangeArea = document.querySelector("#range-area");
+    const resultRadius = document.querySelector("#result-radius");
+    const layoutStatus = document.querySelector("#layout-status");
+    const defaultSite = { latitude: 15.5, longitude: 89.2, radius: 30 };
+
+    function renderSitePreview() {
+      const latitude = Number(latitudeInput.value);
+      const longitude = Number(longitudeInput.value);
+      const radiusKm = Number(radiusInput.value);
+      const valid = Number.isFinite(latitude) && Number.isFinite(longitude)
+        && latitude >= 5 && latitude <= 22
+        && longitude >= 80 && longitude <= 96;
+
+      radiusValue.textContent = `${radiusKm} km`;
+      resultRadius.textContent = `${radiusKm} km`;
+      rangeArea.textContent = `${Math.round(Math.PI * radiusKm * radiusKm).toLocaleString()} km²`;
+
+      if (!valid) {
+        candidateCount.textContent = "—";
+        turbinePoints.replaceChildren();
+        arrayLines.replaceChildren();
+        layoutStatus.textContent = "Enter a Bay of Bengal coordinate within the displayed bounds to preview a project area.";
+        return;
+      }
+
+      const centerX = 472 + (longitude - defaultSite.longitude) * 13;
+      const centerY = 324 - (latitude - defaultSite.latitude) * 13;
+      const radiusPx = radiusKm * 3.05;
+      const spacing = 38;
+      const extent = Math.ceil(radiusPx / spacing) + 1;
+      const angle = -Math.PI / 10;
+      const candidates = [];
+
+      for (let row = -extent; row <= extent; row++) {
+        for (let column = -extent; column <= extent; column++) {
+          const x = (column + (row % 2 ? .5 : 0)) * spacing;
+          const y = row * spacing;
+          const rotatedX = x * Math.cos(angle) - y * Math.sin(angle);
+          const rotatedY = x * Math.sin(angle) + y * Math.cos(angle);
+          const distance = Math.hypot(rotatedX, rotatedY);
+          const pointX = centerX + rotatedX;
+          const pointY = centerY + rotatedY;
+          const overlapsLand = pointX < 211 || (pointX > 505 && pointY < 145);
+
+          if (distance < radiusPx - 9 && !overlapsLand) {
+            candidates.push({ x: pointX, y: pointY, row });
+          }
+        }
+      }
+
+      rangeRing.setAttribute("cx", centerX);
+      rangeRing.setAttribute("cy", centerY);
+      rangeRing.setAttribute("r", radiusPx);
+      sitePin.setAttribute("cx", centerX);
+      sitePin.setAttribute("cy", centerY);
+      siteCallout.setAttribute("transform", `translate(${centerX + 13} ${centerY - 24})`);
+      mapCoordinate.textContent = `${latitude.toFixed(2)}° N · ${longitude.toFixed(2)}° E`;
+      turbinePoints.innerHTML = candidates.map(({ x, y }, index) =>
+        `<circle class="turbine-dot" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="5" style="animation-delay:${Math.min(index * 12, 300)}ms"></circle>`
+      ).join("");
+      arrayLines.innerHTML = [...new Set(candidates.map(point => point.row))].map(row => {
+        const rowPoints = candidates.filter(point => point.row === row).sort((a, b) => a.x - b.x);
+        if (rowPoints.length < 2) return "";
+        return `<line class="array-line" x1="${rowPoints[0].x.toFixed(1)}" y1="${rowPoints[0].y.toFixed(1)}" x2="${rowPoints[rowPoints.length - 1].x.toFixed(1)}" y2="${rowPoints[rowPoints.length - 1].y.toFixed(1)}"></line>`;
+      }).join("");
+      candidateCount.textContent = candidates.length.toLocaleString();
+    }
+
+    radiusInput.addEventListener("input", renderSitePreview);
+    latitudeInput.addEventListener("input", renderSitePreview);
+    longitudeInput.addEventListener("input", renderSitePreview);
+    document.querySelector("#preview-layout").addEventListener("click", () => {
+      renderSitePreview();
+      layoutStatus.textContent = "Concept array updated for this coordinate and range. Production ML optimization, wake analysis, and engineering checks are not connected in this preview.";
+    });
+    document.querySelector("#reset-site").addEventListener("click", () => {
+      latitudeInput.value = defaultSite.latitude.toFixed(2);
+      longitudeInput.value = defaultSite.longitude.toFixed(2);
+      radiusInput.value = defaultSite.radius;
+      renderSitePreview();
+      layoutStatus.textContent = "Illustrative layout preview. Machine-learning optimization is not connected.";
+    });
+    renderSitePreview();
+
+    document.querySelector("#demo-form").addEventListener("submit", event => {
+      event.preventDefault();
+      document.querySelector("#form-status").textContent =
+        "This preview does not send requests yet. A contact service can be connected later.";
+    });
+  </script>
+</body>
+</html>

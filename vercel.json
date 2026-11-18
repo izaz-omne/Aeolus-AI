@@ -1,0 +1,12 @@
+{
+  "rewrites": [
+    {
+      "source": "/dashboard",
+      "destination": "/AeolusAi.html"
+    },
+    {
+      "source": "/dashboard/",
+      "destination": "/AeolusAi.html"
+    }
+  ]
+}

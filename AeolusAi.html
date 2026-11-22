@@ -333,6 +333,38 @@ input[type=range]:active::-webkit-slider-thumb{transform:scale(1.2)}
 }
 .stage.mode-map .maplibregl-ctrl-top-right{margin-top:40px}
 
+/* First-visit dashboard tour */
+#dashboardTour{
+  position:fixed;inset:0;width:100vw;height:100dvh;max-width:none;max-height:none;
+  margin:0;padding:0;border:0;overflow:hidden;background:transparent;color:var(--text);
+}
+#dashboardTour::backdrop{background:transparent}
+.dashboard-tour-scrim{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.dashboard-tour-card{
+  position:absolute;width:min(400px,calc(100vw - 32px));padding:20px;
+  border:1px solid var(--line2);border-radius:var(--radius);background:var(--panel);
+  box-shadow:0 16px 48px rgba(0,0,0,.4);
+}
+.dashboard-tour-card h2{margin:0;color:var(--text);font-size:20px;font-weight:600;line-height:1.25}
+.dashboard-tour-card p{margin:10px 0 0;color:var(--text2);font-size:13px;line-height:1.55}
+.dashboard-tour-progress{display:flex;gap:5px;margin:17px 0 0}
+.dashboard-tour-progress span{height:3px;flex:1;background:var(--line2)}
+.dashboard-tour-progress span.is-complete{background:var(--accent)}
+.dashboard-tour-step{margin:12px 0 0;color:var(--muted);font-size:11px}
+.dashboard-tour-actions{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:18px}
+.dashboard-tour-nav{display:flex;align-items:center;gap:8px}
+.dashboard-tour-actions button{min-height:34px;padding:7px 11px;border:1px solid var(--line2);border-radius:5px;background:var(--panel2);color:var(--text);font:inherit;font-size:12px;cursor:pointer}
+.dashboard-tour-actions button:hover{border-color:var(--accent)}
+.dashboard-tour-actions .dashboard-tour-next{border-color:var(--accent);background:var(--accent);color:#04110f;font-weight:500}
+.dashboard-tour-actions .dashboard-tour-skip{border-color:transparent;background:transparent;color:var(--text2)}
+.dashboard-tour-target{outline:2px solid var(--accent)!important;outline-offset:4px!important;border-radius:6px}
+@media(max-width:600px){
+  .dashboard-tour-card{padding:17px}
+}
+@media(prefers-reduced-motion:reduce){
+  .dashboard-tour-card,.dashboard-tour-actions button{transition:none}
+}
+
 /* full-screen 2D / 3D (no split) */
 .stage .splitter{display:none}
 .stage.mode-map .map-pane,.stage.mode-3d .scene-pane{flex:1 1 auto}
@@ -1050,6 +1082,30 @@ body.left-collapsed .map-legend,body.left-collapsed .map-readout,body.left-colla
   </main>
   <div class="toasts" id="toasts" aria-live="polite"></div>
 </div>
+<dialog id="dashboardTour" aria-labelledby="dashboardTourTitle" aria-describedby="dashboardTourDescription">
+  <svg class="dashboard-tour-scrim" id="dashboardTourScrim" aria-hidden="true">
+    <defs>
+      <mask id="dashboardTourMask" maskUnits="userSpaceOnUse">
+        <rect id="dashboardTourMaskBase" fill="white"></rect>
+        <rect id="dashboardTourMaskHole" fill="black" rx="8"></rect>
+      </mask>
+    </defs>
+    <rect id="dashboardTourShade" fill="rgba(3,8,13,.76)" mask="url(#dashboardTourMask)"></rect>
+  </svg>
+  <section class="dashboard-tour-card" id="dashboardTourCard" role="status" aria-live="polite">
+    <h2 id="dashboardTourTitle"></h2>
+    <p id="dashboardTourDescription"></p>
+    <div class="dashboard-tour-progress" id="dashboardTourProgress" aria-hidden="true"></div>
+    <p class="dashboard-tour-step" id="dashboardTourStep"></p>
+    <div class="dashboard-tour-actions">
+      <button type="button" class="dashboard-tour-skip" id="dashboardTourSkip">Skip tour</button>
+      <div class="dashboard-tour-nav">
+        <button type="button" id="dashboardTourBack">Back</button>
+        <button type="button" class="dashboard-tour-next" id="dashboardTourNext" autofocus>Start tour</button>
+      </div>
+    </div>
+  </section>
+</dialog>
 <dialog id="reportDialog" class="report-dialog" aria-label="Wind site dashboard">
   <div class="report-shell">
     <header class="pdf-header">
@@ -4527,6 +4583,164 @@ function boot() {
       activateAnalysisTab(lastAnalysisTab);
       lastAnalysisTab.focus();
     },
+  });
+  const dashboardTour = $('#dashboardTour');
+  const dashboardTourTitle = $('#dashboardTourTitle');
+  const dashboardTourDescription = $('#dashboardTourDescription');
+  const dashboardTourProgress = $('#dashboardTourProgress');
+  const dashboardTourStep = $('#dashboardTourStep');
+  const dashboardTourCard = $('#dashboardTourCard');
+  const dashboardTourMaskBase = $('#dashboardTourMaskBase');
+  const dashboardTourMaskHole = $('#dashboardTourMaskHole');
+  const dashboardTourShade = $('#dashboardTourShade');
+  const dashboardTourSteps = [
+    { title: 'Welcome to AEOLUS', description: 'Plan an offshore wind site, explore its wind conditions, and review an assessment. This quick tour shows you where to begin.' },
+    { title: 'Start with a sample site', description: 'The first study site is selected for this walkthrough so the next steps can show its overview, wind conditions, and report. You can add your own site with Add site at any time.' , target: '#sitesSec .site-item.on' },
+    { title: 'Start with the overview', description: 'The overview brings your selected site’s capacity, output, area, and turbine layout together.' , target: '#overviewTab', tab: 'overview' },
+    { title: 'Check wind conditions', description: 'Open Wind conditions for the selected site’s forecast, direction, and wind-speed details.' , target: '#windTab', tab: 'wind' },
+    { title: 'Ask the AEOLUS assistant', description: 'Use the assistant for help with site inputs, turbine sizing, and the settings shown in your workspace.' , target: '#assistantTab', tab: 'assistant' },
+    { title: 'Open the site report', description: 'When a site is selected, choose View report in its overview to open the assessment and report tools.' , target: '#openSiteReport', fallbackTarget: '#summarySec', tab: 'overview' },
+  ];
+  let dashboardTourIndex = 0;
+  let dashboardTourTarget = null;
+  let dashboardTourInitialTab = null;
+  let dashboardTourInitialPanels = null;
+  let dashboardTourPositionTimer = 0;
+  const clearDashboardTourTarget = () => {
+    dashboardTourTarget?.classList.remove('dashboard-tour-target');
+    dashboardTourTarget = null;
+  };
+  const positionDashboardTour = () => {
+    if (!dashboardTour.open) return;
+    const width = innerWidth, height = innerHeight;
+    const svg = $('#dashboardTourScrim');
+    svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
+    for (const rect of [dashboardTourMaskBase, dashboardTourShade]) {
+      rect.setAttribute('x', '0');
+      rect.setAttribute('y', '0');
+      rect.setAttribute('width', String(width));
+      rect.setAttribute('height', String(height));
+    }
+    if (dashboardTourTarget?.isConnected) {
+      const bounds = dashboardTourTarget.getBoundingClientRect();
+      const pad = 7;
+      dashboardTourMaskHole.setAttribute('x', String(Math.max(0, bounds.left - pad)));
+      dashboardTourMaskHole.setAttribute('y', String(Math.max(0, bounds.top - pad)));
+      dashboardTourMaskHole.setAttribute('width', String(Math.min(width, bounds.width + pad * 2)));
+      dashboardTourMaskHole.setAttribute('height', String(Math.min(height, bounds.height + pad * 2)));
+      dashboardTourTarget.classList.add('dashboard-tour-target');
+    } else {
+      dashboardTourMaskHole.setAttribute('x', '-1');
+      dashboardTourMaskHole.setAttribute('y', '-1');
+      dashboardTourMaskHole.setAttribute('width', '0');
+      dashboardTourMaskHole.setAttribute('height', '0');
+    }
+    const card = dashboardTourCard.getBoundingClientRect();
+    const margin = 16;
+    let left = (width - card.width) / 2;
+    let top = (height - card.height) / 2;
+    if (dashboardTourTarget?.isConnected) {
+      const bounds = dashboardTourTarget.getBoundingClientRect();
+      if (width < 700) {
+        top = bounds.bottom + 18;
+        if (top + card.height > height - margin) top = bounds.top - card.height - 18;
+      } else if (bounds.right + card.width + 20 <= width - margin) {
+        left = bounds.right + 20;
+        top = bounds.top + bounds.height / 2 - card.height / 2;
+      } else if (bounds.left - card.width - 20 >= margin) {
+        left = bounds.left - card.width - 20;
+        top = bounds.top + bounds.height / 2 - card.height / 2;
+      } else {
+        top = bounds.bottom + 18;
+        if (top + card.height > height - margin) top = bounds.top - card.height - 18;
+      }
+    }
+    dashboardTourCard.style.left = `${clamp(left, margin, Math.max(margin, width - card.width - margin))}px`;
+    dashboardTourCard.style.top = `${clamp(top, margin, Math.max(margin, height - card.height - margin))}px`;
+  };
+  const showDashboardTourStep = index => {
+    dashboardTourIndex = index;
+    clearDashboardTourTarget();
+    if (index === 1 && !store.site() && store.sites.length) store.selectSite(store.sites[0].id);
+    const step = dashboardTourSteps[index];
+    if (step.tab) activateAnalysisTab($(`[data-analysis-tab="${step.tab}"]`));
+    else if (index === 0 && dashboardTourInitialTab) activateAnalysisTab(dashboardTourInitialTab);
+    if (innerWidth < 900 && index > 0) {
+      const showSites = index === 1;
+      document.body.classList.toggle('left-collapsed', !showSites);
+      document.body.classList.toggle('right-collapsed', showSites);
+    } else if (innerWidth < 900 && dashboardTourInitialPanels) {
+      document.body.classList.toggle('left-collapsed', dashboardTourInitialPanels.left);
+      document.body.classList.toggle('right-collapsed', dashboardTourInitialPanels.right);
+    }
+    dashboardTourTitle.textContent = step.title;
+    dashboardTourDescription.textContent = index === 1 && store.site()
+      ? `We’ll use ${store.site().name} for the walkthrough, so the next steps show its site data. You can add your own site with Add site at any time.`
+      : index === dashboardTourSteps.length - 1 && !$('#openSiteReport')
+        ? 'Select a site to see its overview. Choose View report there to open the assessment and report tools.'
+        : step.description;
+    dashboardTourProgress.innerHTML = dashboardTourSteps.slice(1).map((_, stepIndex) =>
+      `<span class="${stepIndex < index ? 'is-complete' : ''}"></span>`).join('');
+    dashboardTourProgress.hidden = index === 0;
+    dashboardTourStep.textContent = index === 0 ? 'About 30 seconds · 5 quick stops' : `Step ${index} of ${dashboardTourSteps.length - 1}`;
+    $('#dashboardTourBack').hidden = index === 0;
+    const hasReport = Boolean($('#openSiteReport'));
+    $('#dashboardTourNext').textContent = index === 0 ? 'Start tour' : index === dashboardTourSteps.length - 1 ? (hasReport ? 'View report' : 'Finish tour') : 'Next';
+    const targetSelector = index === dashboardTourSteps.length - 1 && !$('#openSiteReport')
+      ? step.fallbackTarget
+      : index === 1 && !$('#sitesSec .site-item.on')
+        ? '#addSite'
+        : step.target;
+    clearTimeout(dashboardTourPositionTimer);
+    if (!targetSelector) {
+      positionDashboardTour();
+      return;
+    }
+    dashboardTourPositionTimer = setTimeout(() => {
+      const target = $(targetSelector);
+      if (!target) {
+        positionDashboardTour();
+        return;
+      }
+      dashboardTourTarget = target;
+      target.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: 'auto' });
+      requestAnimationFrame(positionDashboardTour);
+    }, innerWidth < 900 ? 320 : 0);
+    positionDashboardTour();
+  };
+  const finishDashboardTour = () => {
+    if (!dashboardTour.open) return;
+    dashboardTour.close();
+    clearDashboardTourTarget();
+    if (dashboardTourInitialTab?.isConnected) activateAnalysisTab(dashboardTourInitialTab);
+    if (innerWidth < 900 && dashboardTourInitialPanels) {
+      document.body.classList.toggle('left-collapsed', dashboardTourInitialPanels.left);
+      document.body.classList.toggle('right-collapsed', dashboardTourInitialPanels.right);
+    }
+    setTimeout(() => { app.map?.map.resize(); app.scene?.resize(); }, 300);
+  };
+  $('#dashboardTourNext').addEventListener('click', () => {
+    if (dashboardTourIndex === dashboardTourSteps.length - 1) {
+      const reportButton = $('#openSiteReport');
+      finishDashboardTour();
+      reportButton?.click();
+    } else showDashboardTourStep(dashboardTourIndex + 1);
+  });
+  $('#dashboardTourBack').addEventListener('click', () => showDashboardTourStep(Math.max(0, dashboardTourIndex - 1)));
+  $('#dashboardTourSkip').addEventListener('click', finishDashboardTour);
+  dashboardTour.addEventListener('cancel', event => {
+    event.preventDefault();
+    finishDashboardTour();
+  });
+  window.addEventListener('resize', positionDashboardTour);
+  dashboardTourInitialTab = $('#analysisTabs [aria-selected="true"]');
+  dashboardTourInitialPanels = {
+    left: document.body.classList.contains('left-collapsed'),
+    right: document.body.classList.contains('right-collapsed'),
+  };
+  requestAnimationFrame(() => {
+    dashboardTour.showModal();
+    showDashboardTourStep(0);
   });
   icons();
   window.addEventListener('online', () => toast('Back online — reloading unavailable data.', 'info'));

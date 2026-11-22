@@ -4611,6 +4611,7 @@ function boot() {
   const dashboardTourSteps = [
     { title: 'Welcome to AEOLUS', description: 'Plan an offshore wind site, explore its wind conditions, and review an assessment. This quick tour shows you where to begin.' },
     { title: 'Start with a sample site', description: 'The first study site is selected for this walkthrough so the next steps can show its overview, wind conditions, and report. You can add your own site with Add site at any time.' , target: '#sitesSec .site-item.on' },
+    { title: 'Switch to 3D view', description: 'Open the 3D digital twin to explore the selected site and its turbine layout.' , target: '#viewSeg [data-view="3d"]', view: '3d' },
     { title: 'Start with the overview', description: 'The overview brings your selected site’s capacity, output, area, and turbine layout together.' , target: '#overviewTab', tab: 'overview' },
     { title: 'Check wind conditions', description: 'Open Wind conditions for the selected site’s forecast, direction, and wind-speed details.' , target: '#windTab', tab: 'wind' },
     { title: 'Ask the AEOLUS assistant', description: 'Use the assistant for help with site inputs, turbine sizing, and the settings shown in your workspace.' , target: '#assistantTab', tab: 'assistant' },
@@ -4682,8 +4683,9 @@ function boot() {
     else if (index === 0 && dashboardTourInitialTab) activateAnalysisTab(dashboardTourInitialTab);
     if (innerWidth < 900 && index > 0) {
       const showSites = index === 1;
+      const showAnalysis = index >= 3;
       document.body.classList.toggle('left-collapsed', !showSites);
-      document.body.classList.toggle('right-collapsed', showSites);
+      document.body.classList.toggle('right-collapsed', !showAnalysis);
     } else if (innerWidth < 900 && dashboardTourInitialPanels) {
       document.body.classList.toggle('left-collapsed', dashboardTourInitialPanels.left);
       document.body.classList.toggle('right-collapsed', dashboardTourInitialPanels.right);
@@ -4697,10 +4699,16 @@ function boot() {
     dashboardTourProgress.innerHTML = dashboardTourSteps.slice(1).map((_, stepIndex) =>
       `<span class="${stepIndex < index ? 'is-complete' : ''}"></span>`).join('');
     dashboardTourProgress.hidden = index === 0;
-    dashboardTourStep.textContent = index === 0 ? 'About 30 seconds · 5 quick stops' : `Step ${index} of ${dashboardTourSteps.length - 1}`;
+    dashboardTourStep.textContent = index === 0 ? 'About 30 seconds · 6 quick stops' : `Step ${index} of ${dashboardTourSteps.length - 1}`;
     $('#dashboardTourBack').hidden = index === 0;
     const hasReport = Boolean($('#openSiteReport'));
-    $('#dashboardTourNext').textContent = index === 0 ? 'Start tour' : index === dashboardTourSteps.length - 1 ? (hasReport ? 'View report' : 'Finish tour') : 'Next';
+    $('#dashboardTourNext').textContent = index === 0
+      ? 'Start tour'
+      : step.view === '3d' && app.view !== '3d'
+        ? 'Open 3D view'
+        : index === dashboardTourSteps.length - 1
+          ? (hasReport ? 'View report' : 'Finish tour')
+          : 'Next';
     const targetSelector = index === dashboardTourSteps.length - 1 && !$('#openSiteReport')
       ? step.fallbackTarget
       : index === 1 && !$('#sitesSec .site-item.on')
@@ -4735,6 +4743,14 @@ function boot() {
     setTimeout(() => { app.map?.map.resize(); app.scene?.resize(); }, 300);
   };
   $('#dashboardTourNext').addEventListener('click', () => {
+    const step = dashboardTourSteps[dashboardTourIndex];
+    if (step.view === '3d' && app.view !== '3d') {
+      $('#viewSeg [data-view="3d"]').click();
+      dashboardTourDescription.textContent = 'The 3D view is active. Explore the site and turbine layout, then continue to the overview.';
+      $('#dashboardTourNext').textContent = 'Next';
+      positionDashboardTour();
+      return;
+    }
     if (dashboardTourIndex === dashboardTourSteps.length - 1) {
       const reportButton = $('#openSiteReport');
       finishDashboardTour();

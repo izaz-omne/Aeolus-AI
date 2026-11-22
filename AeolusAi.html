@@ -783,7 +783,7 @@ body.left-collapsed .map-legend,body.left-collapsed .map-readout,body.left-colla
   box-shadow:0 18px 56px rgba(0,0,0,.42);
 }
 .report-dialog::backdrop{background:rgba(3,8,12,.76)}
-.report-shell{height:100%;min-height:0;display:grid;grid-template-rows:62px minmax(0,1fr);overflow:hidden;background:#0b1117;font-family:var(--font)}
+.report-shell{position:relative;height:100%;min-height:0;display:grid;grid-template-rows:62px minmax(0,1fr);overflow:hidden;background:#0b1117;font-family:var(--font)}
 .pdf-header{display:flex;align-items:center;justify-content:space-between;gap:14px;min-width:0;padding:8px 18px;border-bottom:1px solid #27313a;background:#10171e}
 .pdf-brand{display:flex;align-items:center;gap:10px;min-width:0}
 .pdf-brand-mark{width:30px;height:30px;flex:none;color:#46c3b4}
@@ -803,6 +803,12 @@ body.left-collapsed .map-legend,body.left-collapsed .map-readout,body.left-colla
 .pdf-download:hover,.pdf-icon-btn:hover,.pdf-toolbar-btn:hover:not(:disabled){background:#202d37;border-color:#53636e;color:#fff}
 .pdf-icon-btn{width:34px;height:34px;border-radius:5px}
 .pdf-icon-btn:focus-visible,.pdf-download:focus-visible,.pdf-toolbar-btn:focus-visible,.pdf-section-btn:focus-visible,.pdf-page-field input:focus-visible,.dashboard-nav button:focus-visible,.dashboard-site-picker select:focus-visible,.dashboard-chart-point:focus-visible{outline:2px solid #54c4b8;outline-offset:2px}
+.report-tour-finish{position:absolute;z-index:12;right:20px;bottom:20px;width:min(340px,calc(100% - 32px));padding:16px;border:1px solid #53636e;border-radius:7px;background:#10171e;color:#e3eaf0;box-shadow:0 12px 36px rgba(0,0,0,.4)}
+.report-tour-finish[hidden]{display:none}
+.report-tour-finish h2{margin:0;font-size:16px;font-weight:600}
+.report-tour-finish p{margin:8px 0 14px;color:#c0ccd5;font-size:13px;line-height:1.5}
+.report-tour-finish button{min-height:34px;padding:7px 11px;border:1px solid #54c4b8;border-radius:5px;background:#54c4b8;color:#071311;font:inherit;font-size:12px;font-weight:600;cursor:pointer}
+.report-tour-finish button:hover{background:#75d5cc}
 .pdf-viewer{height:100%;min-height:0}
 .pdf-viewer[hidden],.dashboard-view[hidden]{display:none!important}
 .report-workspace{position:relative;min-width:0;min-height:0;overflow:hidden}
@@ -942,6 +948,7 @@ body.left-collapsed .map-legend,body.left-collapsed .map-readout,body.left-colla
   .pdf-viewer.drawer-open .pdf-sidebar-scrim{display:block}
   .mobile-only{display:inline-flex}
   .pdf-pages{gap:12px;padding:14px 12px}
+  .report-tour-finish{right:12px;bottom:12px;width:calc(100% - 24px)}
 }
 @media(prefers-reduced-motion:reduce){
   .report-dialog,.pdf-download,.pdf-icon-btn,.pdf-toolbar-btn,.dashboard-nav button{transition:none}
@@ -1195,6 +1202,11 @@ body.left-collapsed .map-legend,body.left-collapsed .map-readout,body.left-colla
         </main>
       </div>
     </div>
+    <aside class="report-tour-finish" id="reportTourFinish" hidden aria-labelledby="reportTourFinishTitle">
+      <h2 id="reportTourFinishTitle">Close the report</h2>
+      <p>When you’re done reviewing, close the report to return to the main dashboard.</p>
+      <button type="button" id="reportTourClose">Close report</button>
+    </aside>
   </div>
 </dialog>
 <script type="module">
@@ -4220,6 +4232,7 @@ $('#summarySec').addEventListener('click', event => {
   if (site) openSiteReport(site);
 });
 $('#reportClose').addEventListener('click', () => $('#reportDialog').close());
+$('#reportTourClose').addEventListener('click', () => $('#reportClose').click());
 $('#dashboardViewToggle').addEventListener('click', () => {
   setReportWorkspaceView($('#reportViewer').hidden ? 'pdf' : 'dashboard');
 });
@@ -4324,6 +4337,8 @@ $('#reportDialog').addEventListener('cancel', event => {
   $('#reportDialog').close();
 });
 $('#reportDialog').addEventListener('close', () => {
+  $('#reportTourFinish').hidden = true;
+  $('#reportClose').classList.remove('dashboard-tour-target');
   reportLoadGeneration += 1;
   if (reportPageObserver) reportPageObserver.disconnect();
   reportPageObserver = null;
@@ -4684,7 +4699,8 @@ function boot() {
     dashboardTourProgress.hidden = index === 0;
     dashboardTourStep.textContent = index === 0 ? 'About 30 seconds · 5 quick stops' : `Step ${index} of ${dashboardTourSteps.length - 1}`;
     $('#dashboardTourBack').hidden = index === 0;
-    $('#dashboardTourNext').textContent = index === 0 ? 'Start tour' : index === dashboardTourSteps.length - 1 ? 'Finish tour' : 'Next';
+    const hasReport = Boolean($('#openSiteReport'));
+    $('#dashboardTourNext').textContent = index === 0 ? 'Start tour' : index === dashboardTourSteps.length - 1 ? (hasReport ? 'View report' : 'Finish tour') : 'Next';
     const targetSelector = index === dashboardTourSteps.length - 1 && !$('#openSiteReport')
       ? step.fallbackTarget
       : index === 1 && !$('#sitesSec .site-item.on')
@@ -4720,7 +4736,14 @@ function boot() {
   };
   $('#dashboardTourNext').addEventListener('click', () => {
     if (dashboardTourIndex === dashboardTourSteps.length - 1) {
+      const reportButton = $('#openSiteReport');
       finishDashboardTour();
+      if (reportButton) {
+        reportButton.click();
+        $('#reportTourFinish').hidden = false;
+        $('#reportClose').classList.add('dashboard-tour-target');
+        $('#reportTourClose').focus();
+      }
     } else showDashboardTourStep(dashboardTourIndex + 1);
   });
   $('#dashboardTourBack').addEventListener('click', () => showDashboardTourStep(Math.max(0, dashboardTourIndex - 1)));
